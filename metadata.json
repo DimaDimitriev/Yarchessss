@@ -1,0 +1,6 @@
+{
+  "name": "Ярче! Баллы",
+  "description": "Энергосберегающий калькулятор баллов для работников сети Ярче! с поддержкой нескольких рабочих столов, таймером и счетчиком нажатий.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

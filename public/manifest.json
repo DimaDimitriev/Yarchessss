@@ -1,0 +1,26 @@
+{
+  "name": "Ярче! Баллы — Калькулятор смены",
+  "short_name": "Ярче! Баллы",
+  "description": "Энергосберегающий калькулятор баллов для работников сети Ярче! с поддержкой нескольких рабочих столов и отмен.",
+  "start_url": "./",
+  "scope": "./",
+  "id": "yarche-points-calculator",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050507",
+  "theme_color": "#050507",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/src/assets/images/app_icon_1785606188361.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

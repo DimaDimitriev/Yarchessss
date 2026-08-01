@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="110" fill="#050507"/>
+  <rect x="24" y="24" width="464" height="464" rx="90" fill="#0d0d10" stroke="#27272a" stroke-width="6"/>
+  <g transform="translate(256, 256)">
+    <!-- Red Badge Background -->
+    <rect x="-180" y="-180" width="360" height="360" rx="60" fill="#E30613"/>
+    <!-- Yellow accent glow dot -->
+    <circle cx="120" cy="-120" r="18" fill="#FACC15"/>
+    <!-- Central Lightning Bolt Icon -->
+    <path d="M-20,-110 L50,-110 L10,-20 L80,-20 L-60,120 L-20,30 L-80,30 Z" fill="#FFFFFF" stroke="#050507" stroke-width="8" stroke-linejoin="round"/>
+  </g>
+</svg>
