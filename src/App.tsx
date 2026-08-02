@@ -53,7 +53,14 @@ export default function App() {
   // --- ИНИЦИАЛИЗА СОСТОЯНИЙ ---
   const [workspaces, setWorkspaces] = useState<Workspace[]>(() => {
     const saved = localStorage.getItem("yarche_workspaces");
-    return saved ? JSON.parse(saved) : DEFAULT_WORKSPACES;
+    if (!saved) return DEFAULT_WORKSPACES;
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch {
+      // Fallback if invalid
+    }
+    return DEFAULT_WORKSPACES;
   });
 
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string>(() => {
@@ -102,12 +109,6 @@ export default function App() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   // Текст времени с последнего нажатия
   const [elapsedText, setElapsedText] = useState<string>("—");
-
-  // Состояние видимости верхней шапки с названием и кнопкой установки
-  const [showTopHeader, setShowTopHeader] = useState<boolean>(() => {
-    const saved = localStorage.getItem("yarche_show_top_header");
-    return saved !== null ? JSON.parse(saved) : true;
-  });
 
   // Состояния мотивирующих достижений
   const [shownMilestones, setShownMilestones] = useState<string[]>(() => {
@@ -165,10 +166,6 @@ export default function App() {
   });
 
   // --- СОХРАНЕНИЕ В LOCALSTORAGE ---
-  useEffect(() => {
-    localStorage.setItem("yarche_show_top_header", JSON.stringify(showTopHeader));
-  }, [showTopHeader]);
-
   useEffect(() => {
     localStorage.setItem("yarche_workspaces", JSON.stringify(workspaces));
   }, [workspaces]);
@@ -431,7 +428,14 @@ export default function App() {
     setRenameValue("");
   };
 
-  const activeWorkspace = workspaces.find(ws => ws.id === activeWorkspaceId) || workspaces[0];
+  const handleRestoreDefaultWorkspaces = () => {
+    if (window.confirm("Восстановить стандартные рабочие столы и кнопки?")) {
+      setWorkspaces(DEFAULT_WORKSPACES);
+      setActiveWorkspaceId(DEFAULT_WORKSPACES[0].id);
+    }
+  };
+
+  const activeWorkspace = workspaces.find(ws => ws.id === activeWorkspaceId) || workspaces[0] || DEFAULT_WORKSPACES[0];
 
   return (
     <div className="min-h-screen w-full bg-[#000000] text-zinc-100 flex justify-center selection:bg-emerald-950 font-sans p-0 m-0">
@@ -439,75 +443,8 @@ export default function App() {
       {/* Мобильный контейнер приложения */}
       <div className="w-full max-w-md min-h-screen flex flex-col justify-between bg-[#050507] border-x border-zinc-900 shadow-2xl relative overflow-x-hidden">
         
-        {/* ВЕРХНЯЯ ШАПКА ПРИЛОЖЕНИЯ И КНОПКА УСТАНОВКИ PWA */}
-        <AnimatePresence>
-          {showTopHeader && (
-            <motion.header 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="mx-4 mt-3 mb-1 flex items-center justify-between bg-[#0d0d10] border border-zinc-800/90 rounded-xl p-2.5 shadow-md overflow-hidden relative"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#E30613] p-1 flex items-center justify-center shadow-md shrink-0">
-                  <img src="./icon.svg" alt="Ярче!" className="w-full h-full" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-black tracking-wider text-white uppercase font-mono leading-none">
-                    Ярче! Баллы
-                  </span>
-                  <span className="text-[9px] text-zinc-500 font-semibold leading-none mt-1">
-                    Калькулятор смены
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleInstallClick}
-                  className={`px-2.5 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 border transition-all cursor-pointer ${
-                    isInstalled
-                      ? "bg-emerald-950/40 border-emerald-800/60 text-emerald-400"
-                      : "bg-amber-500/10 border-amber-500/50 text-amber-300 hover:bg-amber-500/20 shadow-sm"
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{isInstalled ? "Установлено ✓" : "На экран Домой"}</span>
-                </motion.button>
-
-                {/* Кнопка скрытия шапки */}
-                <button
-                  onClick={() => setShowTopHeader(false)}
-                  className="p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/80 rounded-lg transition-colors cursor-pointer"
-                  title="Скрыть верхнюю строку"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </motion.header>
-          )}
-        </AnimatePresence>
-
-        {/* Кнопка возобновления отображения шапки, если она скрыта */}
-        {!showTopHeader && (
-          <div className="mx-4 mt-2 mb-0.5 flex justify-between items-center px-1">
-            <span className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest font-mono">
-              Ярче! Баллы
-            </span>
-            <button
-              onClick={() => setShowTopHeader(true)}
-              className="text-[9px] text-zinc-500 hover:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1 px-2 py-0.5 rounded bg-[#0d0d10] border border-zinc-800/80 transition-colors cursor-pointer"
-              title="Показать название и инструкцию по установке"
-            >
-              <Smartphone className="w-3 h-3 text-amber-400" />
-              <span>Показать шапку</span>
-            </button>
-          </div>
-        )}
-
         {/* ВЕРХНЯЯ ПАНЕЛЬ СТАТУСА (Сумма, Время, Дата) */}
-        <div className="mx-4 mt-1 mb-1 flex justify-between items-center bg-[#0d0d10] border border-zinc-800 rounded-xl px-4 py-2.5 shadow-lg">
+        <div className="mx-4 mt-3 mb-1 flex justify-between items-center bg-[#0d0d10] border border-zinc-800 rounded-xl px-4 py-2.5 shadow-lg">
           <div className="flex flex-col">
             <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-semibold">Дата</span>
             <span className="text-xs font-bold text-emerald-400">
@@ -516,8 +453,8 @@ export default function App() {
           </div>
           <div className="flex flex-col items-center">
             <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-semibold">Баллы за смену</span>
-            <span className="text-xl font-black tracking-tight text-white font-mono">
-              {totalSum.toFixed(2)} <span className="text-[10px] text-emerald-500 font-normal">б.</span>
+            <span className="text-3xl font-black tracking-tight text-emerald-400 font-mono leading-tight mt-0.5">
+              {totalSum.toFixed(2)} <span className="text-xs text-emerald-500/80 font-bold">б.</span>
             </span>
           </div>
           <div className="flex flex-col items-end">
@@ -593,18 +530,31 @@ export default function App() {
               Рабочие столы:
             </span>
             
-            {/* Переключатель режима редактирования */}
-            <button
-              onClick={() => setIsEditMode(!isEditMode)}
-              className={`text-xs px-3 py-1 rounded-lg font-bold uppercase tracking-wider flex items-center gap-1.5 border transition-all cursor-pointer ${
-                isEditMode 
-                ? "bg-amber-950/50 text-amber-400 border-amber-800" 
-                : "bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-zinc-200"
-              }`}
-            >
-              <Edit3 className="w-3.5 h-3.5" />
-              {isEditMode ? "Готово" : "Редакт"}
-            </button>
+            <div className="flex items-center gap-2">
+              {isEditMode && (
+                <button
+                  onClick={handleRestoreDefaultWorkspaces}
+                  className="text-[10px] px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider text-amber-300 bg-amber-950/40 border border-amber-800/60 hover:bg-amber-900/40 transition-all cursor-pointer flex items-center gap-1"
+                  title="Сбросить все столы к стандартным предустановкам"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Сбросить столы</span>
+                </button>
+              )}
+
+              {/* Переключатель режима редактирования */}
+              <button
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={`text-xs px-3 py-1 rounded-lg font-bold uppercase tracking-wider flex items-center gap-1.5 border transition-all cursor-pointer ${
+                  isEditMode 
+                  ? "bg-amber-950/50 text-amber-400 border-amber-800" 
+                  : "bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-zinc-200"
+                }`}
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                {isEditMode ? "Готово" : "Редакт"}
+              </button>
+            </div>
           </div>
 
           {/* Список рабочих столов */}
