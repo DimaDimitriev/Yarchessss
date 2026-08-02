@@ -441,7 +441,7 @@ export default function App() {
     <div className="min-h-screen w-full bg-[#000000] text-zinc-100 flex justify-center selection:bg-emerald-950 font-sans p-0 m-0">
       
       {/* Мобильный контейнер приложения */}
-      <div className="w-full max-w-md min-h-screen flex flex-col justify-between bg-[#050507] border-x border-zinc-900 shadow-2xl relative overflow-x-hidden">
+      <div className="w-full max-w-md min-h-screen flex flex-col justify-between bg-[#050507] border-x border-zinc-900 shadow-2xl relative overflow-x-hidden pt-8 pt-[env(safe-area-inset-top)]">
         
         {/* ВЕРХНЯЯ ПАНЕЛЬ СТАТУСА (Сумма, Время, Дата) */}
         <div className="mx-4 mt-3 mb-1 flex justify-between items-center bg-[#0d0d10] border border-zinc-800 rounded-xl px-4 py-2.5 shadow-lg">
